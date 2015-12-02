@@ -5,29 +5,10 @@ import MotionFunctions as mf
 import numpy as np
 import sys
 import socket
+import math
 
 
 def dataTransfer():
-#     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-#      
-#     try:
-# handles the data transfer between openrave (server) and the GUI (client)
-#         s.bind(('localhost', 54321))
-#         while True:
-#             data, addr = s.recvfrom(2048)   
-#             send = handleData(data)
-#             # send new informations to the GUI for updating purposes
-#             s.sendto(send, addr)
-#     except:
-#         while True:
-#             data, addr = s.recvfrom(2048)   
-#             send = handleData(data)
-#             # send new informations to the GUI for updating purposes
-#             s.sendto(send, addr)
-#     finally:
-#         s.close()
-        
     UDP_IP = "localhost"
     UDP_PORT = 54321
       
@@ -66,8 +47,8 @@ def handleData(data):
         # get values
         values = data_arr[1].split(';')
         # convert from string to float and save in numpy array
-        target = np.array([float(values[0]), float(values[1]), float(values[2]), float(values[3]), float(values[4]), float(values[5])])
-                
+        target = np.array([math.radians(float(values[0])), math.radians(float(values[1])), math.radians(float(values[2])), math.radians(float(values[3])), math.radians(float(values[4])), math.radians(float(values[5]))])
+
         # get the motion type
         motion_type = data_arr[2]
         
