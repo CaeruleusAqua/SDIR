@@ -1,6 +1,7 @@
 #!/usr/bin/python2.7
 from openravepy import *
 import Kinematics as kin
+import kinematics_base as kin_base
 import MotionFunctions as mf
 import numpy as np
 import sys
@@ -85,6 +86,12 @@ def handleData(data):
     
 if __name__ == "__main__":
     # setting up the operave environment
+    kin=kin_base.Kinematics_base()
+    arr = kin.direct_kin([0.0 , 0.0 , math.radians(90.0) , 0.0 , 0.0 , 0.0])
+    print arr
+    print "x: ", round(arr[0], 3)
+    print "y: ", round(arr[1], 3)
+    print "z: ", round(arr[2], 3)
     env = Environment() # create openrave environment
     env.SetViewer('qtcoin') # attach viewer (optional)
     env.Load('../../MyData/MyEnvironment/MyEnv.xml') # load a simple scene
