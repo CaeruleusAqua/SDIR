@@ -32,20 +32,51 @@ class Kinematics_geom(Kinematics_base):
         @return <b><i><c> [return_type]: </c></i></b> return desc
         """
 
+        wp = point
+        wp = self.direct_kin_to_wrist([0.0 , math.radians(45.0) , math.radians(-1.0) , 0.0])
 
+
+        # --------------------calculate Theta0 -----------------
 
         theta_0 = np.empty([2])
-        theta_0[0]=np.arctan2(point[1],point[0])                 # turn robot arm into wrist point plane
+        theta_0[0]=np.arctan2(wp[1], wp[0])                 # turn robot arm into wrist point plane
 
         if theta_0[0] < 0:
             theta_0[1] = theta_0[0] + np.pi
         else:
             theta_0[1] = theta_0[0] - np.pi
 
-        shoulder_point = np.empty([2])                                  # point 3 in presentation
-        shoulder_point[0]=self.direct_kin_to_shoulder([theta_0[0]]);
-        shoulder_point[1]=self.direct_kin_to_shoulder([theta_0[1]]);
-        wrist_point_0=0
+        print "theta0: ", np.round(theta_0,3)
+
+
+        # --------------------calculate Theta1 -----------------
+
+        shoulder=self.direct_kin_to_shoulder([theta_0[0]])
+
+        X_zp=math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
+        Z_zp=wp[2]-shoulder[2]
+
+        beta1 = math.atan2(Z_zp,X_zp)
+
+        R=np.linalg.norm(wp-shoulder)
+        a=abs(self.dh[3]['a'])
+        b=abs(self.dh[4]['d'])
+        d=math.sqrt(a**2 + b**2)
+        e=abs(self.dh[2]['a'])
+
+        beta2=math.acos((d**2-e**2-R**2)/(-2*e*R))
+        theta_1 = -math.pi/2+beta1+beta2
+
+        print "theta1: ", math.degrees(theta_1)
+
+        # --------------------calculate Theta2 -----------------
+
+        beta1 = math.acos((-R**2+d**2+e**2)/(2*d*e))
+        beta2 = math.asin(b/d)
+
+        print "theta2"
+        print math.degrees(beta1+beta2-math.pi)
+
 
 
 

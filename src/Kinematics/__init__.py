@@ -87,7 +87,7 @@ def handleData(data):
 if __name__ == "__main__":
     # setting up the operave environment
     kin=kin_base.Kinematics_base()
-    wp = kin.direct_kin_to_wrist([0.0 , math.radians(90.0) , math.radians(0.0) , 0.0])
+    wp = kin.direct_kin_to_wrist([0.0 , math.radians(45.0) , math.radians(-1.0) , 0.0])
     print "TCP:"
     print np.round(wp, 3)
 
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     #print math.degrees(beta1)                           ## looks good
 
     R=np.linalg.norm(wp-shoulder)
-    #print R                                             ## looks good
+    print R                                             ## looks good
 
     a=abs(kin.dh[3]['a'])
     b=abs(kin.dh[4]['d'])
@@ -129,12 +129,11 @@ if __name__ == "__main__":
     print "theta1"
     print math.degrees(theta_1)
 
-    gamma= math.asin((e*math.sin(theta_1))/a)
-
-    theta_2 = 2 * math.pi - theta_1 - gamma
+    beta1 = math.acos((-R**2+d**2+e**2)/(2*d*e))
+    beta2 = math.asin(b/d)
 
     print "theta2"
-    print math.degrees(theta_2)
+    print math.degrees(beta1+beta2-math.pi)
 
 
     #env = Environment() # create openrave environment
