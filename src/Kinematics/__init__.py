@@ -25,6 +25,8 @@ def dataTransfer():
     finally:
         sock.close()
     
+def serializeDOF(arr):
+    return ';'.join(map(lambda x: str(math.degrees(x)), arr)) + '#'
 
 # handles the data received from the GUI and sets up data for sending
 def handleData(data):
@@ -38,7 +40,7 @@ def handleData(data):
         # get Axis values
         axis_arr = robot.GetDOFValues()
         # convert to string
-        axis_values = str(axis_arr[0])+";"+str(axis_arr[1])+";"+str(axis_arr[2])+";"+str(axis_arr[3])+";"+str(axis_arr[4])+";"+str(axis_arr[5])+'#'
+        axis_values = serializeDOF(axis_arr)
         # adding dummy values for orientation and position (you need to compute the values)
         cart_values = "0;0;0;0;0;0"
         return prefix+axis_values+cart_values
@@ -64,7 +66,7 @@ def handleData(data):
         # get Axis values
         axis_arr = robot.GetDOFValues()
         # convert to string
-        axis_values = str(axis_arr[0])+";"+str(axis_arr[1])+";"+str(axis_arr[2])+";"+str(axis_arr[3])+";"+str(axis_arr[4])+";"+str(axis_arr[5])+'#'
+        axis_values = serializeDOF(axis_arr)
         # adding dummy values for orientation and position (you need to compute the values)
 
         kin = np.round(kin_base.Kinematics_geom().direct_kin_to_wrist(target),3)
