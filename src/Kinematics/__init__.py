@@ -28,29 +28,17 @@ def dataTransfer():
 def serializeDOF(arr):
     return ';'.join(map(lambda x: str(math.degrees(x)), arr)) + '#'
 
+def deserializeDOF(s):
+    return np.array(map(lambda x: math.radians(float(x)), s.split(';')))
+
 # handles the data received from the GUI and sets up data for sending
 def handleData(data):
     # split data string
     data_arr = data.split("#")
     
-    # check if GUI requests the current robot axis values as well as current orientation and position 
-    if data_arr[0] == 'GET':
-        # prefix for parsing
-        prefix = "VAL#"
-        # get Axis values
-        axis_arr = robot.GetDOFValues()
-        # convert to string
-        axis_values = serializeDOF(axis_arr)
-        # adding dummy values for orientation and position (you need to compute the values)
-        cart_values = "0;0;0;0;0;0"
-        return prefix+axis_values+cart_values
-    
     # check if the robot should be moved 
-    elif data_arr[0] == 'MOV':
-        # get values
-        values = data_arr[1].split(';')
-        # convert from string to float and save in numpy array
-        target = np.array([math.radians(float(values[0])), math.radians(float(values[1])), math.radians(float(values[2])), math.radians(float(values[3])), math.radians(float(values[4])), math.radians(float(values[5]))])
+    if data_arr[0] == 'MOV':
+        target = deserializeDOF(data_arr[1])
 
         # get the motion type
         motion_type = data_arr[2]
@@ -60,18 +48,22 @@ def handleData(data):
         # move robot
         mf.Move(robot, trajectory)
         
-        # send new information about the robot's axis values, position and orientation to the GUI for updating purpose
+        # Simulate GET-request to deduplicate code
+        data_arr[0] = 'GET'
+    
+    # check if GUI requests the current robot axis values as well as current orientation and position 
+    if data_arr[0] == 'GET':
         # prefix for parsing
         prefix = "VAL#"
         # get Axis values
         axis_arr = robot.GetDOFValues()
         # convert to string
         axis_values = serializeDOF(axis_arr)
-        # adding dummy values for orientation and position (you need to compute the values)
-
+        
         kin = np.round(kin_base.Kinematics_geom().direct_kin_to_wrist(target),3)
 
         cart_values = str(kin[0]) + ";" + str(kin[1]) + ";" +  str(kin[2]) + ";0;0;0"
+        
         return prefix+axis_values+cart_values
     
     # check if inverse kinematics should be calculated
