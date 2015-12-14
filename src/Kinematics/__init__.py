@@ -60,7 +60,7 @@ def handleData(data):
         # convert to string
         axis_values = serializeDOF(axis_arr)
         
-        kin = np.round(kin_base.Kinematics_geom().direct_kin_to_wrist(target),3)
+        kin = np.round(kin_base.Kinematics_geom().direct_kin_to_wrist(axis_arr),3)
 
         cart_values = str(kin[0]) + ";" + str(kin[1]) + ";" +  str(kin[2]) + ";0;0;0"
         
