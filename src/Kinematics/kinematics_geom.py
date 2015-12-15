@@ -64,8 +64,8 @@ class Kinematics_geom(Kinematics_base):
                 X_zp=math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
             Z_zp=wp[2]-shoulder[2]
 
-            print "SH:",np.round(shoulder,3)
-            print "WP:",np.round(wp,3)
+            #print "SH:",np.round(shoulder,3)
+            #print "WP:",np.round(wp,3)
 
             beta1 = math.atan2(Z_zp,X_zp)
 
@@ -75,13 +75,13 @@ class Kinematics_geom(Kinematics_base):
 
 
             R=np.linalg.norm(wp-shoulder)
-            print "R: ",R
+            #print "R: ",R
             a=abs(self.dh[3]['a'])
             b=abs(self.dh[4]['d'])
             d=math.sqrt(a**2 + b**2)
             e=abs(self.dh[2]['a'])
 
-            print 
+            #print 
             
             f = (d**2-e**2-R**2)/(-2*e*R)
             
