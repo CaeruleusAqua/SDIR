@@ -121,7 +121,7 @@ class Kinematics_geom(Kinematics_base):
         :returns: todo
         :rtype: todo
         """
-        if len(solution) != 5:
+        if len(solution) != 3:
             #print("length is not 5!")
             return False
         for i in range(0,len(solution)):

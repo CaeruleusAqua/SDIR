@@ -206,7 +206,7 @@ class GUI(QtGui.QWidget):
         self.lineedit_cartptp_b = QtGui.QLineEdit('0', self) 
         self.lineedit_cartptp_c = QtGui.QLineEdit('0', self)
         # set up the line edit box for the multiple kinematic solutions
-        self.lineedit_cartptp_box = QtGui.QLineEdit(self)
+        self.lineedit_cartptp_box = QtGui.QTextEdit(self)
         self.lineedit_cartptp_box.setSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding)
         # set up button for the calculation
         self.button_calculate = QtGui.QPushButton('Calculate IK', self)

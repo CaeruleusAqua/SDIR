@@ -26,7 +26,7 @@ def dataTransfer():
         sock.close()
     
 def serializeDOF(arr):
-    return ';'.join(map(lambda x: str(math.degrees(x)), arr)) + '#'
+    return ';'.join(map(lambda x: str(round(math.degrees(x),4)), arr)) + '#'
 
 def deserializeDOF(s):
     return np.array(map(lambda x: math.radians(float(x)), s.split(';')))
@@ -70,14 +70,31 @@ def handleData(data):
     if data_arr[0] == "CAL":
         # get string with values
         values = data_arr[1].split(';')
+        print values
+        
+        floats = []
+        
+        for item in values:
+            floats.append(float(item))
+            
+        print floats
         
         # calculate inverse kinematic solution
+        solution = kin_base.Kinematics_geom().inverse_kin([floats[0],floats[1],floats[2]])
+        print solution
+        
+        ik_values = ""
+        
+        for item in solution:
+            if kin_base.Kinematics_geom().isSolutionValid(item) == True:
+                ik_values = ik_values + serializeDOF([item[0],item[1],item[2],0,0,0])[:-1] + "\n\n"
+                
+        print ik_values
         
         # send the (multiple) solutions to the GUI
         # prefix for parsing
         prefix = "INK#"
         # adding dummy values (you need to replace them with the solutions)
-        ik_values = "0;0;0;0;0;0"
         return prefix+ik_values
     
     
