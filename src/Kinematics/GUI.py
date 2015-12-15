@@ -213,6 +213,7 @@ class GUI(QtGui.QWidget):
         # trigger function on clicked
         QtCore.QObject.connect(self.button_calculate, QtCore.SIGNAL("clicked()"), self.buttonCalculateClicked)
         
+        # Button for Linear movement
         self.button_linear = QtGui.QPushButton('Linear Movement', self)
         QtCore.QObject.connect(self.button_linear, QtCore.SIGNAL("clicked()"), self.buttonLinearClicked)
         
@@ -261,10 +262,12 @@ class GUI(QtGui.QWidget):
 
         # send data
         self.dataTransfer(prefix+msg+motion_type)
-        
+    
+    # function is callend when Linear Movement button is clicked    
     def buttonLinearClicked(self):
         prefix = "LIN#"
         
+        # get gui values
         values = str(self.lineedit_cartptp_x.text()+";"+self.lineedit_cartptp_y.text()+";"+self.lineedit_cartptp_z.text()+";"+self.lineedit_cartptp_a.text()+";"+self.lineedit_cartptp_b.text()+";"+self.lineedit_cartptp_c.text()) 
         
         self.dataTransfer(prefix+values)
