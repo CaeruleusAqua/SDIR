@@ -58,7 +58,8 @@ class Kinematics_geom(Kinematics_base):
 
 
             distance_from_orign = math.sqrt( wp[0]**2  +  wp[1]**2 )
-            if distance_from_orign < self.dh[1]['a']:
+            #if distance_from_orign < self.dh[1]['a']:
+            if theta0<0:
                 X_zp=-math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
             else:
                 X_zp=math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
@@ -69,13 +70,13 @@ class Kinematics_geom(Kinematics_base):
 
             beta1 = math.atan2(Z_zp,X_zp)
 
-            #print "beta1: ", math.degrees(beta1)
+            print "beta1: ", math.degrees(beta1)
 
 
 
 
             R=np.linalg.norm(wp-shoulder)
-            #print "R: ",R
+            print "R: ",R
             a=abs(self.dh[3]['a'])
             b=abs(self.dh[4]['d'])
             d=math.sqrt(a**2 + b**2)
@@ -84,9 +85,10 @@ class Kinematics_geom(Kinematics_base):
             #print 
             
             f = (d**2-e**2-R**2)/(-2*e*R)
-            
-            if f < -1.0 or f > 1.0:
-                continue
+
+            #print "f: ",f
+            #if f < -1.0 or f > 1.0:
+            #    continue
             
             beta2=math.acos((d**2-e**2-R**2)/(-2*e*R))
             #print "beta2: ", math.degrees(beta2)
@@ -134,16 +136,16 @@ class Kinematics_geom(Kinematics_base):
 
 
         theta4 = np.arctan2(s4s5, c4s5) #if s5 is 0 (singularity), atan2 returns 0.0 :-)
-        print "Theta4: ",math.degrees(theta4)
+        #print "Theta4: ",math.degrees(theta4)
 
         c5 =   -(iT03[2, 0:4] * T0G[0:4, 2])[0,0]
-        #s5 =   ((iT03[0, 0:4] * T0G[0:4, 3])[0,0])/(dt*np.cos(theta4))
-        #theta5 = np.arctan2(s5, c5)
+        s5 =   ((iT03[0, 0:4] * T0G[0:4, 3])[0,0])/(self.dh[6]['d']*np.cos(theta4))
+        theta5 = np.arctan2(s5, c5)
         #print "Theta5: ",math.degrees(theta5)
 
-        #c6 =   ((iT03[2, 0:4] * T0G[0:4, 0])[0,0])/(-np.sin(theta5))
-        #s6 =   ((iT03[2, 0:4] * T0G[0:4, 1])[0,0])/(-np.sin(theta5))
-        #theta6 = np.arctan2(s6, c6)
+        c6 =   ((iT03[2, 0:4] * T0G[0:4, 0])[0,0])/(-np.sin(theta5))
+        s6 =   ((iT03[2, 0:4] * T0G[0:4, 1])[0,0])/(-np.sin(theta5))
+        theta6 = np.arctan2(s6, c6)
         #print "Theta6: ",math.degrees(theta6)
 
         #theta4dash = IK.smallerAngle(theta4 + np.pi)
