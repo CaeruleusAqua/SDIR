@@ -213,6 +213,9 @@ class GUI(QtGui.QWidget):
         # trigger function on clicked
         QtCore.QObject.connect(self.button_calculate, QtCore.SIGNAL("clicked()"), self.buttonCalculateClicked)
         
+        self.button_linear = QtGui.QPushButton('Linear Movement', self)
+        QtCore.QObject.connect(self.button_linear, QtCore.SIGNAL("clicked()"), self.buttonLinearClicked)
+        
         # add the widgets to the grid layout
         grid_cartptp.addWidget(label_cartptp_x, 0, 0)
         grid_cartptp.addWidget(self.lineedit_cartptp_x, 0, 1)
@@ -226,6 +229,7 @@ class GUI(QtGui.QWidget):
         grid_cartptp.addWidget(self.lineedit_cartptp_b, 4, 1)
         grid_cartptp.addWidget(label_cartptp_c, 5, 0)
         grid_cartptp.addWidget(self.lineedit_cartptp_c, 5, 1)
+        grid_cartptp.addWidget(self.button_linear, 4, 2)
         grid_cartptp.addWidget(self.button_calculate, 5, 2)
         grid_cartptp.addWidget(self.lineedit_cartptp_box, 0, 2, 4, 1)
         
@@ -258,6 +262,12 @@ class GUI(QtGui.QWidget):
         # send data
         self.dataTransfer(prefix+msg+motion_type)
         
+    def buttonLinearClicked(self):
+        prefix = "LIN#"
+        
+        values = str(self.lineedit_cartptp_x.text()+";"+self.lineedit_cartptp_y.text()+";"+self.lineedit_cartptp_z.text()+";"+self.lineedit_cartptp_a.text()+";"+self.lineedit_cartptp_b.text()+";"+self.lineedit_cartptp_c.text()) 
+        
+        self.dataTransfer(prefix+values)
         
     # function is called when the calculate IK button is clicked
     def buttonCalculateClicked(self):
@@ -297,7 +307,7 @@ class GUI(QtGui.QWidget):
             self.updateValues(data_arr)
         elif data_arr[0] == "INK":
             self.updateINK(data_arr)
-            
+ 
             
             
     # update UI with received position, orientation and axis values
