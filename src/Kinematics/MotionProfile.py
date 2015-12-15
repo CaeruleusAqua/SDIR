@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-ALMOST_ZERO=0.0000001
+ALMOST_ZERO = 0.0000001
 
 class MotionProfileAsync(object):
 	
@@ -20,7 +20,7 @@ class MotionProfileAsync(object):
 		
 		return np.add(np.reshape(np.tile(start_cfg, samples.shape[0]), samples.shape), samples)
 	
-	def calc(self, diff, max_vel, max_accel):
+	def _calc(self, diff, max_vel, max_accel):
 		max_vel = np.copy(max_vel)
 		max_accel = np.copy(max_accel)
 		
@@ -47,7 +47,7 @@ class MotionProfileAsync(object):
 			else:
 				# We don't have enough way to accelerate to maximum velocity
 				# so we recalculate it and try again
-				n = math.sqrt(2.0 * s / (1.0/max_accel[i] + 1.0/max_accel[i]))
+				n = math.sqrt(2.0 * s / (1.0 / max_accel[i] + 1.0 / max_accel[i]))
 				print "%i: Change from %f to %f" % (i, max_vel[i], n)
 				print s, s_a[i], s_d[i]
 				max_vel[i] = n
@@ -55,20 +55,23 @@ class MotionProfileAsync(object):
 				redo = True
 		
 		if redo:
-			return self.calc(diff, max_vel, max_accel)
+			return self._calc(diff, max_vel, max_accel)
 		
 		print t
 		
-		return t
+		return t, max_vel, max_accel
+	
+	def calc(self, diff, max_vel, max_accel):
+		return self._calc(diff, max_vel, max_accel)
 		
-	def sample(self, diff, t, time_step):
-		#print t		
-		#print np.sum(t, axis=1)
+	def sample(self, diff, t, time_step, max_vel, max_accel):
+		# print t		
+		# print np.sum(t, axis=1)
 		t_max = np.amax(np.sum(t, axis=1))
-		#print t_max
+		# print t_max
 
 		steps = int(math.ceil(t_max / time_step))
-		#print steps
+		# print steps
 		
 		if steps == 0:
 			return np.empty([0, diff.size])
@@ -80,13 +83,13 @@ class MotionProfileAsync(object):
 			
 			for j, t_values in enumerate(t):
 				if time < t_values[0]:
-					samples[i][j] = self.max_accel[j] / 2.0 * math.pow(time, 2)
+					samples[i][j] = max_accel[j] / 2.0 * math.pow(time, 2)
 				elif time < t_values[0] + t_values[1]:
 					local_time = time - t_values[0]
-					samples[i][j] = self.max_vel[j] * local_time + self.max_accel[j] / 2.0 * math.pow(t_values[0], 2)
+					samples[i][j] = max_vel[j] * local_time + max_accel[j] / 2.0 * math.pow(t_values[0], 2)
 				elif time < t_values[0] + t_values[1] + t_values[2]:
 					local_t = time - t_values[0] - t_values[1]
-					samples[i][j] = -self.max_accel[j] / 2.0 * math.pow(local_t, 2) + self.max_vel[j] * local_t + self.max_vel[j] * (t_values[1]) + self.max_accel[j] / 2.0 * math.pow(t_values[0], 2)
+					samples[i][j] = -max_accel[j] / 2.0 * math.pow(local_t, 2) + max_vel[j] * local_t + max_vel[j] * (t_values[1]) + max_accel[j] / 2.0 * math.pow(t_values[0], 2)
 				else:
 					samples[i][j] = diff[j]
 
@@ -94,19 +97,72 @@ class MotionProfileAsync(object):
 		# sampling related errors		
 		samples[steps - 1] = diff
 		
-		#print samples
+		# print samples
 		return samples
 	
 	def calculate(self, start_cfg, target_cfg, time_step):
 		rel, sign = self.to_rel(start_cfg, target_cfg)
 
-		t = self.calc(rel, self.max_vel, self.max_accel)
-		samples = self.sample(rel, t, time_step)
+		t, max_vel, max_accel = self.calc(rel, self.max_vel, self.max_accel)
+		samples = self.sample(rel, t, time_step, max_vel, max_accel)
 		
 		return self.to_abs(start_cfg, samples, sign)
 
 class MotionProfileSync(MotionProfileAsync):
-	pass
-
-class MotionProfileFullSync(MotionProfileAsync):
-	pass
+	def calc(self, diff, max_vel, max_accel):
+		# First calculate async solution
+		async, max_vel, max_accel = super(MotionProfileSync, self).calc(diff, max_vel, max_accel)
+		
+		# Find axis taking the longes time
+		t_max = np.tile(np.amax(np.sum(async, axis=1)), async.shape[0])
+		
+		max_accel_to_2 = np.multiply(max_accel, max_accel)
+		
+		tmp1 = np.sqrt(
+					np.subtract(np.multiply(
+							np.multiply(max_accel_to_2, max_accel_to_2),
+							np.multiply(t_max, t_max)
+						),
+						np.add(
+							np.multiply(
+								np.multiply(
+									np.tile(2.0, async.shape[0]),
+									max_accel
+								),
+								np.multiply(
+									max_accel_to_2,
+									diff
+								)
+							),
+							np.multiply(
+								np.multiply(
+									np.tile(2.0, async.shape[0]),
+									max_accel
+								),
+								np.multiply(
+									max_accel_to_2,
+									diff
+								)
+							)
+						)
+					)
+				)
+		tmp2 = np.multiply(max_accel_to_2, t_max)
+		tmp3 = np.add(max_accel, max_accel)
+		
+		max_vel_new = np.divide(np.subtract(tmp2, tmp1), tmp3)
+		
+		# For axis that don't move, we're getting a max_vel of 0 which is not possible
+		# so we restore the old value
+		for i, s in enumerate(diff):
+			if s < ALMOST_ZERO:
+				max_vel_new[i] = max_vel[i]
+		
+		sync, max_vel_new, max_accel = super(MotionProfileSync, self).calc(
+			diff,
+			max_vel_new,
+			max_accel
+		)
+		
+		return sync, max_vel_new, max_accel
+	

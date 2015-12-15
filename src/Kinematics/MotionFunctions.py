@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from MotionProfile import MotionProfileAsync
+from MotionProfile import MotionProfileAsync, MotionProfileSync
 
 def PTPtoConfiguration(start_cfg, target_cfg, motiontype):
     """PTP path planning
@@ -20,7 +20,10 @@ def PTPtoConfiguration(start_cfg, target_cfg, motiontype):
     # in rad/s
     max_vel = np.array([1.74532925, 1.3962634, 1.3962634, 4.01425728, 2.87979327, 4.34586984])    
 
-    profile = MotionProfileAsync(max_accel, max_vel)
+    if motiontype == 'S':
+        profile = MotionProfileSync(max_accel, max_vel)
+    else:
+        profile = MotionProfileAsync(max_accel, max_vel)
     
     trajectory = profile.calculate(start_cfg, target_cfg, 0.01) 
     
