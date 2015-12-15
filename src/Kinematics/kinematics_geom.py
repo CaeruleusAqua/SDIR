@@ -115,11 +115,43 @@ class Kinematics_geom(Kinematics_base):
 
 
 
+        T03 = self.get_dh_transform(self.dh[0],0.0) * self.get_dh_transform(self.dh[1],solutions[0][0])*\
+              self.get_dh_transform(self.dh[2],solutions[0][1]) * self.get_dh_transform(self.dh[3],solutions[0][2])
+        #T03 = IK.getTorigin() * IK.getT1(t1) * IK.getT2(t2) * IK.getT3(t3)
+        iT03 = np.linalg.inv(T03)
+
+
+        T0G = self.get_dh_transform(self.dh[0],0.0) * self.get_dh_transform(self.dh[1],solutions[0][0])*\
+              self.get_dh_transform(self.dh[2],solutions[0][1]) * self.get_dh_transform(self.dh[3],solutions[0][2])*\
+              self.get_dh_transform(self.dh[4],0) * self.get_dh_transform(self.dh[5],0) * self.get_dh_transform(self.dh[6],0)
+
+
+
+        c4s5 = -(iT03[0, 0:4] * T0G[0:4, 2])[0,0]
+        s4s5 = -(iT03[1, 0:4] * T0G[0:4, 2])[0,0]
+
+
+        theta4 = np.arctan2(s4s5, c4s5) #if s5 is 0 (singularity), atan2 returns 0.0 :-)
+        print "Theta4: ",math.degrees(theta4)
+
+        c5 =   -(iT03[2, 0:4] * T0G[0:4, 2])[0,0]
+        #s5 =   ((iT03[0, 0:4] * T0G[0:4, 3])[0,0])/(dt*np.cos(theta4))
+        #theta5 = np.arctan2(s5, c5)
+        #print "Theta5: ",math.degrees(theta5)
+
+        #c6 =   ((iT03[2, 0:4] * T0G[0:4, 0])[0,0])/(-np.sin(theta5))
+        #s6 =   ((iT03[2, 0:4] * T0G[0:4, 1])[0,0])/(-np.sin(theta5))
+        #theta6 = np.arctan2(s6, c6)
+        #print "Theta6: ",math.degrees(theta6)
+
+        #theta4dash = IK.smallerAngle(theta4 + np.pi)
+        #theta5dash = -theta5
+
 
         return solutions
 
 
-    def isSolutionValid(self, solution):
+    def isSolutionValid(self, solution, wrist_point):
         """ todo
 
         :param todo
@@ -127,15 +159,14 @@ class Kinematics_geom(Kinematics_base):
         :returns: todo
         :rtype: todo
         """
-        if len(solution) != 3:
-            #print("length is not 5!")
-            return False
-        for i in range(0,len(solution)):
-            if math.isnan(solution[i]):
-                #print("index"), i, ("is nan!")
-                return False
-            elif solution[i] < self.min_angles_[i] or solution[i] > self.max_angles_[i]:
-                #print("index:"), i, (" %.4f [%.4f; %.4f]") %(solution[i], self.min_angles_[i], self.max_angles_[i])
-                return False
 
-        return True
+        valid=True
+
+        for (i,sol) in enumerate(solution):
+            if sol > self.max_angles_[i] or sol<self.min_angles_[i]:
+                valid = False
+
+        if np.linalg.norm(self.direct_kin_to_wrist([solution[0],solution[1],solution[2],0.0,0.0])-wrist_point) > 0.01:
+            valid = False
+        return valid
+

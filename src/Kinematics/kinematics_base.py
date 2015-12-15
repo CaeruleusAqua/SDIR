@@ -14,8 +14,8 @@ class Kinematics_base:
     ALMOST_MINUS_ONE=-0.9999999
     ALMOST_ZERO=0.0000001
 
-    min_angles_ = [math.radians(-185.0),math.radians(-135.0),math.radians(-120.0)]
-    max_angles_ = [math.radians(185.0),math.radians(35.0),math.radians(158.0)]
+    min_angles_ = [math.radians(-185.0),math.radians(-135.0),math.radians(-120.0),math.radians(-350.0),math.radians(-130.0),math.radians(-350.0)]
+    max_angles_ = [math.radians(185.0),math.radians(35.0),math.radians(158.0),math.radians(350.0),math.radians(130.0),math.radians(350.0)]
 
     dh=list(({'theta':0.0            ,'d':0.0        ,'a':0.0        ,'alpha':-np.pi        }, #rot by 180 degree
              {'theta':0.0            ,'d':-0.815     ,'a':0.350      ,'alpha':-np.pi/2      }, #from KS1 to KS2
