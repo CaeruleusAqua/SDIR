@@ -36,96 +36,135 @@ class Kinematics_geom(Kinematics_base):
 
         # --------------------calculate Theta0 -----------------
 
-        theta_0 = np.empty([2])
-        theta_0[0]=-np.arctan2(wp[1], wp[0])                 # turn robot arm into wrist point plane
+        theta_00=-np.arctan2(wp[1], wp[0])                 # turn robot arm into wrist point plane
 
-        if theta_0[0] < 0:
-            theta_0[1] = theta_0[0] + np.pi
+        if theta_00 < 0:
+            theta_01 = theta_00  + np.pi
         else:
-            theta_0[1] = theta_0[0] - np.pi
+            theta_01 = theta_00 - np.pi
 
         #print "theta0: ", np.round(theta_0,3)
 
 
 
-        # --------------------calculate Theta1 and Theta2-----------------
+        # --------------------calculate Theta1-----------------
 
         solutions=[]
 
-        for theta0 in theta_0:
 
-            shoulder=self.direct_kin_to_shoulder([theta0])
-
-
-            distance_from_orign = math.sqrt( wp[0]**2  +  wp[1]**2 )
-            if distance_from_orign < self.dh[1]['a'] or theta0<-math.pi/2 or theta0>math.pi/2:
-                X_zp=-math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
-                print "True"
-            else:
-                X_zp=math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
-                print "False"
-            Z_zp=wp[2]-shoulder[2]
-
-            print "X: ",X_zp
-            print "Z: ",Z_zp
-
-            #print "SH:",np.round(shoulder,3)
-            #print "WP:",np.round(wp,3)
-
-            beta1 = math.atan2(Z_zp,X_zp)
-
-            print "beta1: ", math.degrees(beta1)
+        shoulder=self.direct_kin_to_shoulder([theta_00])
 
 
+        distance_from_orign = math.sqrt( wp[0]**2  +  wp[1]**2 )
+        if distance_from_orign < self.dh[1]['a']:
+            X_zp=-math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
+        else:
+            X_zp=math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
+        Z_zp=wp[2]-shoulder[2]
 
 
-            R=np.linalg.norm(wp-shoulder)
-            #print "R: ",R
-            a=abs(self.dh[3]['a'])
-            b=abs(self.dh[4]['d'])
-            d=math.sqrt(a**2 + b**2)
-            e=abs(self.dh[2]['a'])
-            
-            f = (d**2-e**2-R**2)/(-2*e*R)
+        beta1 = math.atan2(Z_zp,X_zp)
+        R=np.linalg.norm(wp-shoulder)
 
-            print "f: ",f
-            if f < -1.0 :
-                f=-1
+        a=abs(self.dh[3]['a'])
+        b=abs(self.dh[4]['d'])
+        d=math.sqrt(a**2 + b**2)
+        e=abs(self.dh[2]['a'])
 
-            if f > 1.0:
-                f=1
+        f = (d**2-e**2-R**2)/(-2*e*R)
 
-            
-            beta2=math.acos(f)
-            print "beta2: ", math.degrees(beta2)
+        print "f: ",f
+        if f < -1.0 :
+            f=-1
 
+        if f > 1.0:
+            f=1
 
-            #print "beta2: ",math.degrees(beta2)
-            #beta2=math.acos(1)
-            theta_1 = -math.pi/2+beta1+beta2
+        beta2=math.acos(f)
 
-            theta_1_2 = beta1-beta2 -math.pi/2
-            #print "theta1: ", math.degrees(theta_1)
+        theta_1 = -math.pi/2+beta1+beta2
 
+        theta_1_2 = beta1-beta2 -math.pi/2
 
-            f2 = (-R**2+d**2+e**2)/(2*d*e)
-            print "f2:", f2
-            if f2 < -1.0 :
-                f2=-1
+         # --------------------calculate Theta2-----------------
 
-            if f2 > 1.0:
-                f2=1
-            beta1 = math.acos(f2)
-            #beta1 = math.acos(-1)
-            beta2 = math.asin(b/d)
-            theta_2 = beta1+beta2-math.pi
-            theta_2_2 = math.pi-(beta1-beta2)
-            #print "beta1: ", math.degrees(beta1)
-            #print "beta2: ", math.degrees(beta2)
+        f2 = (-R**2+d**2+e**2)/(2*d*e)
+        print "f2:", f2
+        if f2 < -1.0 :
+            f2=-1
+
+        if f2 > 1.0:
+            f2=1
+        beta1 = math.acos(f2)
+        #beta1 = math.acos(-1)
+        beta2 = math.asin(b/d)
+        theta_2 = beta1+beta2-math.pi
+        theta_2_2 = math.pi-(beta1-beta2)
+        #print "beta1: ", math.degrees(beta1)
+        #print "beta2: ", math.degrees(beta2)
 
 
-            solutions.append([theta0,theta_1,beta1+beta2-math.pi])
-            solutions.append([theta0,theta_1_2,theta_2_2])
+        solutions.append([theta_00,theta_1,beta1+beta2-math.pi])
+        solutions.append([theta_00,theta_1_2,theta_2_2])
+
+
+
+        # --------------------calculate Theta1-----------------
+
+        shoulder=self.direct_kin_to_shoulder([theta_01])
+
+
+        distance_from_orign = math.sqrt( wp[0]**2  +  wp[1]**2 )
+        if distance_from_orign < self.dh[1]['a']:
+            X_zp=-math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
+        else:
+            X_zp=-math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
+        Z_zp=wp[2]-shoulder[2]
+
+
+        beta1 = math.atan2(Z_zp,X_zp)
+        R=np.linalg.norm(wp-shoulder)
+
+        a=abs(self.dh[3]['a'])
+        b=abs(self.dh[4]['d'])
+        d=math.sqrt(a**2 + b**2)
+        e=abs(self.dh[2]['a'])
+
+        f = (d**2-e**2-R**2)/(-2*e*R)
+
+        print "f: ",f
+        if f < -1.0 :
+            f=-1
+
+        if f > 1.0:
+            f=1
+
+        beta2=math.acos(f)
+
+        theta_1 = -math.pi/2+beta1+beta2
+
+        theta_1_2 = beta1-beta2 -math.pi/2
+
+         # --------------------calculate Theta2-----------------
+
+        f2 = (-R**2+d**2+e**2)/(2*d*e)
+        print "f2:", f2
+        if f2 < -1.0 :
+            f2=-1
+
+        if f2 > 1.0:
+            f2=1
+        beta1 = math.acos(f2)
+        #beta1 = math.acos(-1)
+        beta2 = math.asin(b/d)
+        theta_2 = beta1+beta2-math.pi
+        theta_2_2 = math.pi-(beta1-beta2)
+        #print "beta1: ", math.degrees(beta1)
+        #print "beta2: ", math.degrees(beta2)
+
+
+        solutions.append([theta_01,theta_1,beta1+beta2-math.pi])
+        solutions.append([theta_01,theta_1_2,theta_2_2])
 
 
 
