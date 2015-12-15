@@ -106,6 +106,11 @@ class MotionProfileAsync(object):
 		return samples
 	
 	def calculate(self, start_cfg, target_cfg, time_step):
+		# For motion profiles movements are normalized to be positive and start at zero
+		# Later the output is corrected for this normalization
+		# As the robot can move equally in both directions, turning negative movements into positive movements
+		# does not change the result.
+		
 		rel, sign = self.to_rel(start_cfg, target_cfg)
 
 		t, max_vel, max_accel = self.calc(rel, self.max_vel, self.max_accel)
