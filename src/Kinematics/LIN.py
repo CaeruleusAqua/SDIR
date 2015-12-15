@@ -39,7 +39,7 @@ class LIN(object):
             sol = None
             
             for s in sols:
-                if self.kin.isSolutionValid(s):
+                if self.kin.isSolutionValid(s,t):
                     sol = s
                     break
                 

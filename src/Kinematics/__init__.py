@@ -103,7 +103,7 @@ def handleData(data):
         
         # find the valid solutions and serialize
         for item in solution:
-            if kin_base.Kinematics_geom().isSolutionValid(item) == True:
+            if kin_base.Kinematics_geom().isSolutionValid(item,[floats[0],floats[1],floats[2]]) == True:
                 ik_values = ik_values + serializeDOF([item[0],item[1],item[2],0,0,0])[:-1] + "\n\n"
                 
         if ik_values=="":
