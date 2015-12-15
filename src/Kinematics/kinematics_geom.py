@@ -58,12 +58,16 @@ class Kinematics_geom(Kinematics_base):
 
 
             distance_from_orign = math.sqrt( wp[0]**2  +  wp[1]**2 )
-            #if distance_from_orign < self.dh[1]['a']:
-            if theta0<0:
+            if distance_from_orign < self.dh[1]['a'] or theta0<-math.pi/2 or theta0>math.pi/2:
                 X_zp=-math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
+                print "True"
             else:
                 X_zp=math.sqrt( (shoulder[0] - wp[0])**2  +  (shoulder[1] - wp[1])**2 )
+                print "False"
             Z_zp=wp[2]-shoulder[2]
+
+            print "X: ",X_zp
+            print "Z: ",Z_zp
 
             #print "SH:",np.round(shoulder,3)
             #print "WP:",np.round(wp,3)
@@ -76,22 +80,24 @@ class Kinematics_geom(Kinematics_base):
 
 
             R=np.linalg.norm(wp-shoulder)
-            print "R: ",R
+            #print "R: ",R
             a=abs(self.dh[3]['a'])
             b=abs(self.dh[4]['d'])
             d=math.sqrt(a**2 + b**2)
             e=abs(self.dh[2]['a'])
-
-            #print 
             
             f = (d**2-e**2-R**2)/(-2*e*R)
 
-            #print "f: ",f
-            #if f < -1.0 or f > 1.0:
-            #    continue
+            print "f: ",f
+            if f < -1.0 :
+                f=-1
+
+            if f > 1.0:
+                f=1
+
             
-            beta2=math.acos((d**2-e**2-R**2)/(-2*e*R))
-            #print "beta2: ", math.degrees(beta2)
+            beta2=math.acos(f)
+            print "beta2: ", math.degrees(beta2)
 
 
             #print "beta2: ",math.degrees(beta2)
@@ -102,8 +108,14 @@ class Kinematics_geom(Kinematics_base):
             #print "theta1: ", math.degrees(theta_1)
 
 
-            #print (-R**2+d**2+e**2)/(2*d*e)
-            beta1 = math.acos((-R**2+d**2+e**2)/(2*d*e))
+            f2 = (-R**2+d**2+e**2)/(2*d*e)
+            print "f2:", f2
+            if f2 < -1.0 :
+                f2=-1
+
+            if f2 > 1.0:
+                f2=1
+            beta1 = math.acos(f2)
             #beta1 = math.acos(-1)
             beta2 = math.asin(b/d)
             theta_2 = beta1+beta2-math.pi
