@@ -20,39 +20,42 @@ class MotionProfileAsync(object):
 		
 		return np.add(np.reshape(np.tile(start_cfg, samples.shape[0]), samples.shape), samples)
 	
-	def calc(self, diff):
+	def calc(self, diff, max_vel, max_accel):
+		max_vel = np.copy(max_vel)
+		max_accel = np.copy(max_accel)
+		
 		# Acceleration time
-		t_a = np.round(np.divide(self.max_vel, self.max_accel), 6)
+		t_a = np.round(np.divide(max_vel, max_accel), 6)
 		# Acceleration way
-		s_a = np.round(np.divide(np.multiply(self.max_vel, t_a), np.tile(2.0, self.max_vel.shape[0])), 6)
+		s_a = np.round(np.divide(np.multiply(max_vel, t_a), np.tile(2.0, max_vel.shape[0])), 6)
 		
 		# We assume that acceleration = deacceleration
 		t_d = t_a
 		s_d = s_a
 		
-		t = np.empty([self.max_vel.shape[0], 3])
+		t = np.empty([max_vel.shape[0], 3])
 		
 		redo = False
 		
 		for i, s in enumerate(diff):
 			if s >= s_a[i] + s_d[i]:
 				# Time we use constant velocity
-				t_c = (s - s_a[i] - s_d[i]) / self.max_vel[i]
+				t_c = (s - s_a[i] - s_d[i]) / max_vel[i]
 				t[i] = np.array([t_a[i], t_c, t_d[i]])
 			elif s <= ALMOST_ZERO:
 				t[i] = np.array([0.0, 0.0, 0.0])
 			else:
 				# We don't have enough way to accelerate to maximum velocity
 				# so we recalculate it and try again
-				n = math.sqrt(2.0 * s / (1.0/self.max_accel[i] + 1.0/self.max_accel[i]))
-				print "%i: Change from %f to %f" % (i, self.max_vel[i], n)
+				n = math.sqrt(2.0 * s / (1.0/max_accel[i] + 1.0/max_accel[i]))
+				print "%i: Change from %f to %f" % (i, max_vel[i], n)
 				print s, s_a[i], s_d[i]
-				self.max_vel[i] = n
+				max_vel[i] = n
 				
 				redo = True
 		
 		if redo:
-			return self.calc(diff)
+			return self.calc(diff, max_vel, max_accel)
 		
 		print t
 		
@@ -97,7 +100,7 @@ class MotionProfileAsync(object):
 	def calculate(self, start_cfg, target_cfg, time_step):
 		rel, sign = self.to_rel(start_cfg, target_cfg)
 
-		t = self.calc(rel)
+		t = self.calc(rel, self.max_vel, self.max_accel)
 		samples = self.sample(rel, t, time_step)
 		
 		return self.to_abs(start_cfg, samples, sign)
