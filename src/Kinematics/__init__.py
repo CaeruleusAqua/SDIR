@@ -3,6 +3,7 @@ from openravepy import *
 import Kinematics as kin
 import kinematics_geom as kin_base
 import MotionFunctions as mf
+from LIN import LIN
 import numpy as np
 import sys
 import socket
@@ -50,6 +51,21 @@ def handleData(data):
         
         # Simulate GET-request to deduplicate code
         data_arr[0] = 'GET'
+    elif data_arr[0] == 'LIN':
+        start = kin_base.Kinematics_geom().direct_kin_to_wrist(robot.GetDOFValues())
+        target = map(lambda x: float(x), data_arr[1].split(';'))
+        
+        lin = LIN(kin_base.Kinematics_geom())
+        
+        trajectory = lin.calculate(start, target[:3])
+        
+        if trajectory is not None:
+            mf.Move(robot, trajectory)
+        
+        # Simulate GET-request to deduplicate code
+        data_arr[0] = 'GET'
+        
+        
     
     # check if GUI requests the current robot axis values as well as current orientation and position 
     if data_arr[0] == 'GET':
