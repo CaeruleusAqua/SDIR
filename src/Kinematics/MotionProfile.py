@@ -46,13 +46,18 @@ class MotionProfileAsync(object):
 				t[i] = np.array([0.0, 0.0, 0.0])
 			else:
 				# We don't have enough way to accelerate to maximum velocity
-				# so we recalculate it and try again
+				# so we recalculate it and try again				
 				n = math.sqrt(2.0 * s / (1.0 / max_accel[i] + 1.0 / max_accel[i]))
-				print "%i: Change from %f to %f" % (i, max_vel[i], n)
-				print s, s_a[i], s_d[i]
-				max_vel[i] = n
 				
-				redo = True
+				if math.fabs(n - max_vel[i]) < ALMOST_ZERO:
+					t_c = (s - s_a[i] - s_d[i]) / max_vel[i]
+					t[i] = np.array([t_a[i], t_c, t_d[i]])
+				else:
+					print "%i: Change from %f to %f" % (i, max_vel[i], n)
+					print s, s_a[i], s_d[i]
+					max_vel[i] = n
+				
+					redo = True
 		
 		if redo:
 			return self._calc(diff, max_vel, max_accel)
