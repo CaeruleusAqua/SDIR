@@ -81,7 +81,13 @@ class Kinematics_geom(Kinematics_base):
             d=math.sqrt(a**2 + b**2)
             e=abs(self.dh[2]['a'])
 
-            #print (d**2-e**2-R**2)/(-2*e*R)
+            print 
+            
+            f = (d**2-e**2-R**2)/(-2*e*R)
+            
+            if f < -1.0 or f > 1.0:
+                continue
+            
             beta2=math.acos((d**2-e**2-R**2)/(-2*e*R))
             #print "beta2: ", math.degrees(beta2)
 
