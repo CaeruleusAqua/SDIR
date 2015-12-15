@@ -89,6 +89,10 @@ def handleData(data):
             if kin_base.Kinematics_geom().isSolutionValid(item) == True:
                 ik_values = ik_values + serializeDOF([item[0],item[1],item[2],0,0,0])[:-1] + "\n\n"
                 
+        if ik_values=="":
+            ik_values="No Solution found!"
+            
+            
         print ik_values
         
         # send the (multiple) solutions to the GUI
