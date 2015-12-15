@@ -121,6 +121,8 @@ class Kinematics_geom(Kinematics_base):
         iT03 = np.linalg.inv(T03)
 
 
+
+        #T0G should be an Rotation Matrix (roll, pitch, yaw)
         T0G = self.get_dh_transform(self.dh[0],0.0) * self.get_dh_transform(self.dh[1],solutions[0][0])*\
               self.get_dh_transform(self.dh[2],solutions[0][1]) * self.get_dh_transform(self.dh[3],solutions[0][2])*\
               self.get_dh_transform(self.dh[4],0) * self.get_dh_transform(self.dh[5],0) * self.get_dh_transform(self.dh[6],0)

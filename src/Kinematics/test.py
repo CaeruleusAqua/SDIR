@@ -10,7 +10,7 @@ kin=kin_base.Kinematics_geom()
 kin2=kin_base2.Kinematics_numeric()
 
 print "Zero koordinates"
-zero = kin.direct_kin_to_wrist([math.radians(10.0), math.radians(10.0), math.radians(4.0), 0.0, 0.0, 0.0])
+zero = kin.direct_kin_to_wrist([math.radians(20.0), math.radians(1.0), math.radians(96.0), 0.0, 0.0, 0.0])
 print np.round(zero,3)
 
 #wp = kin.direct_kin_to_wrist([math.radians(0.0) , math.radians(0.0) , math.radians(0.0) , 0.0])
@@ -38,9 +38,9 @@ print kin.isSolutionValid(angles[0],zero)
 
 
 
-#angles = kin2.inverse_kin(zero)
-##print angles
-#print "angles: "
-#angles=angles.x
-#print np.degrees(np.round(angles,3))
-#print np.round(kin.direct_kin_to_wrist([angles[0],angles[1],angles[2],0.0]),3)
+angles = kin2.inverse_kin(zero)
+#print angles
+print "angles: "
+angles=angles.x
+print np.degrees(np.round(angles,3))
+print np.round(kin.direct_kin_to_wrist([angles[0],angles[1],angles[2],0.0]),3)
