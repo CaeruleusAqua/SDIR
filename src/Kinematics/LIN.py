@@ -42,7 +42,7 @@ class LIN(object):
             for s in sols:
                 if self.kin.isSolutionValid(s, t):
                     if i > 0:
-                        a = np.subtract(trajectory[i - 1][:3], s)
+                        a = np.subtract(angles[i - 1], s)
                         d = np.sqrt(a.dot(a))
                         
                         if d < min:
