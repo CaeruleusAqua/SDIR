@@ -52,12 +52,13 @@ def handleData(data):
         # Simulate GET-request to deduplicate code
         data_arr[0] = 'GET'
     elif data_arr[0] == 'LIN':
+        print "DOF: ",robot.GetDOFValues()
         start = kin_base.Kinematics_geom().direct_kin_to_wrist(robot.GetDOFValues())
         target = map(lambda x: float(x), data_arr[1].split(';'))
         
         lin = LIN(kin_base.Kinematics_geom())
         
-        trajectory = lin.calculate(start, target[:3])
+        trajectory = lin.calculate(start, target)
         
         if trajectory is not None:
             mf.Move(robot, trajectory)
@@ -73,7 +74,6 @@ def handleData(data):
         prefix = "VAL#"
         # get Axis values
         axis_arr = robot.GetDOFValues()
-        print axis_arr
         # convert to string
         axis_values = serializeDOF(axis_arr)
         d=kin_base.Kinematics_geom().direct_kin(axis_arr) #np.round(kin_base.Kinematics_geom().direct_kin(axis_arr),3)
@@ -87,31 +87,26 @@ def handleData(data):
     if data_arr[0] == "CAL":
         # get string with values
         values = data_arr[1].split(';')
-        print values
         
         floats = []
         
         for item in values:
             floats.append(float(item))
-            
-        print floats
+
         
         # calculate inverse kinematic solution
-        solution = kin_base.Kinematics_geom().inverse_kin([floats[0],floats[1],floats[2]])
-        print solution
+        solution = kin_base.Kinematics_geom().inverse_kin([floats[0],floats[1],floats[2]],[floats[3],floats[4],floats[5]])
         
         ik_values = ""
         
         # find the valid solutions and serialize
         for item in solution:
             if kin_base.Kinematics_geom().isSolutionValid(item,[floats[0],floats[1],floats[2]]) == True:
-                ik_values = ik_values + serializeDOF([item[0],item[1],item[2],0,0,0])[:-1] + "\n\n"
+                ik_values = ik_values + serializeDOF([item[0],item[1],item[2],item[3],item[4],item[5]])[:-1] + "\n\n"
                 
         if ik_values=="":
             ik_values="No Solution found!"
-            
-            
-        print ik_values
+
         
         # send the (multiple) solutions to the GUI
         # prefix for parsing

@@ -36,7 +36,6 @@ class Kinematics_base:
                 self.get_dh_transform(self.dh[3], thetas[2]) * self.get_dh_transform(self.dh[4], thetas[3]) * \
                 self.get_dh_transform(self.dh[5], thetas[4]) * self.get_dh_transform(self.dh[6], thetas[5])
         alpha = np.degrees(math.atan2(trans[1,0],trans[0,0]))
-        print alpha
         beta = np.degrees(math.atan2(-trans[3,1],math.sqrt(trans[0,0]**2+trans[1,0]**2)))
         gamma = np.degrees(math.atan2(trans[2,1],trans[2,2]))
         return [np.array((trans * np.matrix((0, 0, 0, 1)).transpose()).transpose())[0][0:3],alpha,beta,gamma]

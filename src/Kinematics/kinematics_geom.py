@@ -24,14 +24,14 @@ class Kinematics_geom(Kinematics_base):
         return point
 
 
-    def inverse_kin( self, point):
+    def inverse_kin( self, point, orientation):
         """ inverse kinematic calculation
 
         @param [in] point <b><i><c> [point_type]: </c></i></b> point desc
         @param [in] condition_angle <b><i><c> [condition_angle_type]: </c></i></b> condition_angle desc
         @return <b><i><c> [return_type]: </c></i></b> return desc
         """
-
+        print "Orientation: ", orientation
         wp=point
 
         # -------------------------------------calculate Theta0 -------------------------
@@ -179,24 +179,24 @@ class Kinematics_geom(Kinematics_base):
 
 
 
-            T0G = self.getRotationXYZ(0.0,0.0,0.0,wp[0], wp[1],wp[2])
+            T0G = self.getRotationXYZ(orientation[0],orientation[1],orientation[2],wp[0], wp[1],wp[2])
 
 
 
             c4s5 = -(iT03[0, 0:4] * T0G[0:4, 2])[0,0]
             s4s5 = -(iT03[1, 0:4] * T0G[0:4, 2])[0,0]
             theta4 = np.arctan2(s4s5, c4s5) #if s5 is 0 (singularity), atan2 returns 0.0 :-)
-            print "Theta4: ",math.degrees(theta4)
+            #print "Theta4: ",math.degrees(theta4)
 
             c5 =   -(iT03[2, 0:4] * T0G[0:4, 2])[0,0]
             s5 =   ((iT03[0, 0:4] * T0G[0:4, 3])[0,0])/(self.dh[6]['d']*np.cos(theta4))
             theta5 = np.arctan2(s5, c5)
-            print "Theta5: ",math.degrees(theta5)
+            #print "Theta5: ",math.degrees(theta5)
 
             c6 =   ((iT03[2, 0:4] * T0G[0:4, 0])[0,0])/(-np.sin(theta5))
             s6 =   ((iT03[2, 0:4] * T0G[0:4, 1])[0,0])/(-np.sin(theta5))
             theta6 = np.arctan2(s6, c6)
-            print "Theta6: ",math.degrees(theta6)
+            #print "Theta6: ",math.degrees(theta6)
             solution.append(theta4)
             solution.append(theta5)
             solution.append(theta6)
@@ -218,11 +218,12 @@ class Kinematics_geom(Kinematics_base):
 
         valid=True
 
-        for (i,sol) in enumerate(solution):
+        for (i,sol) in enumerate(solution[:3]):
             if sol > self.max_angles_[i] or sol<self.min_angles_[i]:
                 valid = False
 
         if np.linalg.norm(self.direct_kin_to_wrist([solution[0],solution[1],solution[2],0.0,0.0])-wrist_point) > 0.01:
             valid = False
+            print False
         return valid
 

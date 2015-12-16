@@ -6,8 +6,10 @@ class LIN(object):
         self.kin = kin
     
     def calculate(self, start_cfg, target_cfg):
+        print "Start: ", start_cfg
+        print "target: ", target_cfg
         #First we make a relative movement vom [0, 0, 0] to [x, y, z]
-        diff = np.subtract(target_cfg, start_cfg)
+        diff = np.subtract(target_cfg[:3], start_cfg)
         
         # Now we apply our motion profile over the length of that resulting vector
         length = np.sqrt(diff.dot(diff))
@@ -29,13 +31,13 @@ class LIN(object):
         ))
         
         if trajectory.shape[0] != 0:
-            trajectory[trajectory.shape[0] - 1] = target_cfg
+            trajectory[trajectory.shape[0] - 1] = target_cfg[:3]
         
-        # No solve the inverse kinematic for every subpoint
+        # Now solve the inverse kinematic for every subpoint
         angles = np.empty([trajectory.shape[0], 6])
 
         for i, t in enumerate(trajectory):
-            sols = self.kin.inverse_kin(t)
+            sols = self.kin.inverse_kin(t,np.radians(target_cfg[3:]))
             sol = None
             
             for s in sols:
