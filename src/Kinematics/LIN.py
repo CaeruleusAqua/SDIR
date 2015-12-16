@@ -58,6 +58,8 @@ class LIN(object):
                 print "No solution found!"
                 
                 return None
+
+            print sol
             
             angles[i] = sol
 

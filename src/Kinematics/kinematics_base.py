@@ -23,7 +23,8 @@ class Kinematics_base:
              {'theta':0.0            ,'d':0.0        ,'a':-0.145     ,'alpha':np.pi/2       }, #from KS3 to KS4
              {'theta':0.0            ,'d':-1.545     ,'a':0.0        ,'alpha':-np.pi/2      }, #from KS4 to KS5
              {'theta':0.0            ,'d':0.0        ,'a':0.0        ,'alpha':np.pi/2       }, #from KS5 to KS6
-             {'theta':0.0            ,'d':-0.158     ,'a':0.0        ,'alpha':np.pi         })) #to tool
+             {'theta':0.0            ,'d':0.0        ,'a':0.0        ,'alpha':-np.pi/2      }, #from KS5 to KS6
+             {'theta':0.0            ,'d':-0.158     ,'a':0.0        ,'alpha':0.0           })) #to tool
 
 
     def direct_kin(self, thetas):
@@ -34,10 +35,16 @@ class Kinematics_base:
         trans = self.get_dh_transform(self.dh[0], 0) * \
                 self.get_dh_transform(self.dh[1], thetas[0]) * self.get_dh_transform(self.dh[2], thetas[1]) * \
                 self.get_dh_transform(self.dh[3], thetas[2]) * self.get_dh_transform(self.dh[4], thetas[3]) * \
-                self.get_dh_transform(self.dh[5], thetas[4]) * self.get_dh_transform(self.dh[6], thetas[5])
+                self.get_dh_transform(self.dh[5], thetas[4]) * self.get_dh_transform(self.dh[6], thetas[5]) * \
+                self.get_dh_transform(self.dh[6], 0)
         alpha = np.degrees(math.atan2(trans[1,0],trans[0,0]))
         beta = np.degrees(math.atan2(-trans[3,1],math.sqrt(trans[0,0]**2+trans[1,0]**2)))
         gamma = np.degrees(math.atan2(trans[2,1],trans[2,2]))
+
+
+        print alpha
+        print beta
+        print gamma
         return [np.array((trans * np.matrix((0, 0, 0, 1)).transpose()).transpose())[0][0:3],alpha,beta,gamma]
 
 
