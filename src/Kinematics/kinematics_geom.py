@@ -31,7 +31,6 @@ class Kinematics_geom(Kinematics_base):
         @param [in] condition_angle <b><i><c> [condition_angle_type]: </c></i></b> condition_angle desc
         @return <b><i><c> [return_type]: </c></i></b> return desc
         """
-        print "Orientation: ", orientation
         wp=point
 
         # -------------------------------------calculate Theta0 -------------------------
