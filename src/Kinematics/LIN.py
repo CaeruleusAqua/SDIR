@@ -40,7 +40,7 @@ class LIN(object):
             min = 1000000.0
             
             for s in sols:
-                if self.kin.isSolutionValid(s):
+                if self.kin.isSolutionValid(s, t):
                     if i > 0:
                         a = np.subtract(trajectory[i - 1][:3], s)
                         d = np.sqrt(a.dot(a))
@@ -57,7 +57,7 @@ class LIN(object):
                 
                 return None
             
-            angles[i] = np.concatenate((sol, np.array([0, 0, 0])))
-        
+            angles[i] = sol
+
         return angles
             
