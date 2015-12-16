@@ -39,11 +39,20 @@ class LIN(object):
         for i, t in enumerate(trajectory):
             sols = self.kin.inverse_kin(t,np.radians(target_cfg[3:]))
             sol = None
+            min = 1000000.0
             
             for s in sols:
-                if self.kin.isSolutionValid(s,t):
-                    sol = s
-                    break
+                if self.kin.isSolutionValid(s, t):
+                    if i > 0:
+                        a = np.subtract(angles[i - 1], s)
+                        d = np.sqrt(a.dot(a))
+                        
+                        if d < min:
+                            min = d
+                            sol = s
+                    else:
+                        sol = s
+                        break
                 
             if sol is None:
                 print "No solution found!"
