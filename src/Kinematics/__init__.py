@@ -73,12 +73,13 @@ def handleData(data):
         prefix = "VAL#"
         # get Axis values
         axis_arr = robot.GetDOFValues()
+        print axis_arr
         # convert to string
         axis_values = serializeDOF(axis_arr)
-        
-        kin = np.round(kin_base.Kinematics_geom().direct_kin_to_wrist(axis_arr),3)
+        d=kin_base.Kinematics_geom().direct_kin(axis_arr) #np.round(kin_base.Kinematics_geom().direct_kin(axis_arr),3)
+        kin= np.round(d[0])
 
-        cart_values = str(kin[0]) + ";" + str(kin[1]) + ";" +  str(kin[2]) + ";0;0;0"
+        cart_values = str(kin[0]) + ";" + str(kin[1]) + ";" +  str(kin[2]) + ";" +  str(d[1]) + ";" +  str(d[2]) + ";" +  str(d[3])
         
         return prefix+axis_values+cart_values
     

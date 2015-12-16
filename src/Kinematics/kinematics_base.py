@@ -35,7 +35,11 @@ class Kinematics_base:
                 self.get_dh_transform(self.dh[1], thetas[0]) * self.get_dh_transform(self.dh[2], thetas[1]) * \
                 self.get_dh_transform(self.dh[3], thetas[2]) * self.get_dh_transform(self.dh[4], thetas[3]) * \
                 self.get_dh_transform(self.dh[5], thetas[4]) * self.get_dh_transform(self.dh[6], thetas[5])
-        return np.array((trans * np.matrix((0, 0, 0, 1)).transpose()).transpose())[0][0:3]
+        alpha = np.degrees(math.atan2(trans[1,0],trans[0,0]))
+        print alpha
+        beta = np.degrees(math.atan2(-trans[3,1],math.sqrt(trans[0,0]**2+trans[1,0]**2)))
+        gamma = np.degrees(math.atan2(trans[2,1],trans[2,2]))
+        return [np.array((trans * np.matrix((0, 0, 0, 1)).transpose()).transpose())[0][0:3],alpha,beta,gamma]
 
 
     def direct_kin_to_shoulder(self, thetas):
@@ -71,6 +75,22 @@ class Kinematics_base:
                     -cos(dh['theta'] + theta) * sin(dh['alpha']), dh['a'] * sin(dh['theta'] + theta)),
                    (0, sin(dh['alpha']), cos(dh['alpha']), dh['d']),
                    (0, 0, 0, 1)))
+        return trans
+
+
+    def getRotationZ(self,a):
+        trans = np.matrix(( cos(a),-sin(a),0,0 ),
+                          (sin(a),cos(a),0,0),
+                          (0,0,1,0),
+                          (0,0,0,1))
+        return trans
+
+    def getRotationXYZ(self,a,b,c,x,y,z):
+        trans = np.matrix((( cos(a)*cos(b), -sin(a)*cos(c)+sin(c)*sin(b)*cos(a), sin(a)*sin(c)+cos(c)*sin(b)*cos(a),   x ),
+                          ( sin(a)*cos(b),  cos(a)*cos(c)+sin(b)*sin(a)*sin(c),  cos(a)*-sin(c)+sin(b)*sin(a)*cos(c),  y ),
+                          ( -sin(b),        sin(c)*cos(b),                       cos(b)*cos(c),                        z ),
+                          ( 0,              0,                                   0,                                    1 )
+                          ))
         return trans
 
 

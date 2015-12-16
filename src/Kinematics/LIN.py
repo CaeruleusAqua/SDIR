@@ -48,7 +48,7 @@ class LIN(object):
                 
                 return None
             
-            angles[i] = np.concatenate((sol, np.array([0, 0, 0])))
-        
+            angles[i] = sol
+
         return angles
             
