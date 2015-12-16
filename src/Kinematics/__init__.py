@@ -32,6 +32,8 @@ def serializeDOF(arr):
 def deserializeDOF(s):
     return np.array(map(lambda x: math.radians(float(x)), s.split(';')))
 
+handles = []
+
 # handles the data received from the GUI and sets up data for sending
 def handleData(data):
     # split data string
@@ -61,6 +63,10 @@ def handleData(data):
         trajectory = lin.calculate(start, target)
         
         if trajectory is not None:
+            handles.append(env.drawlinestrip(points=np.array([[start[0], start[1], start[2]],[target[0], target[1], target[2]]]),
+                           linewidth=2.0,
+                           colors=np.array([[0,1,0],[0,1,0]])))
+                    
             mf.Move(robot, trajectory)
         
         # Simulate GET-request to deduplicate code
