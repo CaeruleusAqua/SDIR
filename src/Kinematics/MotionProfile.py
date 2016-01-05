@@ -21,46 +21,50 @@ class MotionProfileAsync(object):
 		return np.add(np.reshape(np.tile(start_cfg, samples.shape[0]), samples.shape), samples)
 	
 	def _calc(self, diff, max_vel, max_accel):
-		max_vel = np.copy(max_vel)
-		max_accel = np.copy(max_accel)
 		
-		# Acceleration time
-		t_a = np.round(np.divide(max_vel, max_accel), 6)
-		# Acceleration way
-		s_a = np.round(np.divide(np.multiply(max_vel, t_a), np.tile(2.0, max_vel.shape[0])), 6)
+		redo = True
 		
-		# We assume that acceleration = deacceleration
-		t_d = t_a
-		s_d = s_a
+		while redo == True:
+			
+			redo = False
 		
-		t = np.empty([max_vel.shape[0], 3])
-		
-		redo = False
-		
-		for i, s in enumerate(diff):
-			if s >= s_a[i] + s_d[i]:
-				# Time we use constant velocity
-				t_c = (s - s_a[i] - s_d[i]) / max_vel[i]
-				t[i] = np.array([t_a[i], t_c, t_d[i]])
-			elif s <= ALMOST_ZERO:
-				t[i] = np.array([0.0, 0.0, 0.0])
-			else:
-				# We don't have enough way to accelerate to maximum velocity
-				# so we recalculate it and try again				
-				n = math.sqrt(2.0 * s / (1.0 / max_accel[i] + 1.0 / max_accel[i]))
-				
-				if math.fabs(n - max_vel[i]) < ALMOST_ZERO:
+			max_vel = np.copy(max_vel)
+			max_accel = np.copy(max_accel)
+			
+			# Acceleration time
+			t_a = np.round(np.divide(max_vel, max_accel), 6)
+			# Acceleration way
+			s_a = np.round(np.divide(np.multiply(max_vel, t_a), np.tile(2.0, max_vel.shape[0])), 6)
+			
+			# We assume that acceleration = deacceleration
+			t_d = t_a
+			s_d = s_a
+			
+			t = np.empty([max_vel.shape[0], 3])
+			
+			
+			for i, s in enumerate(diff):
+				if s >= s_a[i] + s_d[i]:
+					# Time we use constant velocity
 					t_c = (s - s_a[i] - s_d[i]) / max_vel[i]
 					t[i] = np.array([t_a[i], t_c, t_d[i]])
+				elif s <= ALMOST_ZERO:
+					t[i] = np.array([0.0, 0.0, 0.0])
 				else:
-					print "%i: Change from %f to %f" % (i, max_vel[i], n)
-					print s, s_a[i], s_d[i]
-					max_vel[i] = n
-				
-					redo = True
+					# We don't have enough way to accelerate to maximum velocity
+					# so we recalculate it and try again				
+					n = math.sqrt(2.0 * s / (1.0 / max_accel[i] + 1.0 / max_accel[i]))
+					
+					if math.fabs(n - max_vel[i]) < ALMOST_ZERO:
+						t_c = (s - s_a[i] - s_d[i]) / max_vel[i]
+						t[i] = np.array([t_a[i], t_c, t_d[i]])
+					else:
+						print "%i: Change from %f to %f" % (i, max_vel[i], n)
+						print s, s_a[i], s_d[i]
+						max_vel[i] = n
+					
+						redo = True
 		
-		if redo:
-			return self._calc(diff, max_vel, max_accel)
 		
 		print t
 		
