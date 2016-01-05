@@ -58,7 +58,28 @@ class LIN(object):
                 print "No solution found!"
                 
                 return None
-
+            
+            
+            #a = sol
+            
+            #if (i>0):
+            #    a = np.subtract(angles[i - 1], sol)
+            
+            #max_vel = np.array([1.74532925, 1.3962634, 1.3962634, 4.01425728, 2.87979327, 4.34586984]) 
+                        
+            
+            #if (np.divide(max_vel,np.tile(100.0, max_vel.shape[0])) < np.abs(a))[0:3].any():
+            #    print a
+            #    
+            #    print np.divide(max_vel,np.tile(100.0, max_vel.shape[0]))
+            #    
+            #    print np.divide(max_vel,np.tile(100.0, max_vel.shape[0])) < np.abs(a)
+            #    
+            #    print "No solution found!"
+            #    
+            #    return None
+            
+            
             print sol
             
             angles[i] = sol
