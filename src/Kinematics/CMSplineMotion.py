@@ -4,9 +4,9 @@ from SplineMotion import SplineMotion
 from scipy.linalg import solve_banded
 
 
-class CSplineMotion(SplineMotion):
+class CMSplineMotion(SplineMotion):
     def __init__(self, kin):
-        super(CSplineMotion, self).__init__(kin)
+        super(CMSplineMotion, self).__init__(kin)
         self.a = np.matrix([[2, -2, 1, 1],
                             [-3, 3, -2, -1],
                             [0, 0, 1, 0],
