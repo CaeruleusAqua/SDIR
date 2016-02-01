@@ -223,6 +223,5 @@ class Kinematics_geom(Kinematics_base):
 
         if np.linalg.norm(self.direct_kin_to_wrist([solution[0],solution[1],solution[2],0.0,0.0])-wrist_point) > 0.01:
             valid = False
-            print False
         return valid
 

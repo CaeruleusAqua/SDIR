@@ -161,9 +161,14 @@ class GUI(QtGui.QWidget):
         # trigger function on clicked
         QtCore.QObject.connect(self.button_move, QtCore.SIGNAL("clicked()"), self.buttonMoveClicked)
         
-        self.button_bspline = QtGui.QPushButton('Move BSpline', self)
-        # trigger function on clicked
+        self.button_bspline = QtGui.QPushButton('Move B-Spline', self)
         QtCore.QObject.connect(self.button_bspline, QtCore.SIGNAL("clicked()"), self.buttonBSplineClicked)
+        
+        self.button_cspline = QtGui.QPushButton('Move C-Spline', self)
+        QtCore.QObject.connect(self.button_bspline, QtCore.SIGNAL("clicked()"), self.buttonCSplineClicked)
+        
+        self.button_cmspline = QtGui.QPushButton('Move CM-Spline', self)
+        QtCore.QObject.connect(self.button_bspline, QtCore.SIGNAL("clicked()"), self.buttonCMSplineClicked)
         
         # add the widgets to the grid layout
         grid_ptp.addWidget(label_ptp_a1, 0, 0)
@@ -180,8 +185,10 @@ class GUI(QtGui.QWidget):
         grid_ptp.addWidget(self.lineedit_ptp_a5, 4, 1)
         grid_ptp.addWidget(label_ptp_a6, 5, 0)
         grid_ptp.addWidget(self.lineedit_ptp_a6, 5, 1)
-        grid_ptp.addWidget(self.button_move, 5, 2)
-        grid_ptp.addWidget(self.button_bspline, 5, 3)
+        grid_ptp.addWidget(self.button_move, 2, 2)
+        grid_ptp.addWidget(self.button_bspline, 3, 2)
+        grid_ptp.addWidget(self.button_cspline, 4, 2)
+        grid_ptp.addWidget(self.button_cmspline, 5, 2)
         
         # set the grid layout for the group
         group_box.setLayout(grid_ptp)
@@ -270,6 +277,18 @@ class GUI(QtGui.QWidget):
     
     def buttonBSplineClicked(self):
         prefix = "SPL#B#"
+        data = str(self.lineedit_cartptp_box.toPlainText())
+        
+        self.dataTransfer(prefix + data)
+        
+    def buttonCSplineClicked(self):
+        prefix = "SPL#C#"
+        data = str(self.lineedit_cartptp_box.toPlainText())
+        
+        self.dataTransfer(prefix + data)
+    
+    def buttonCMSplineClicked(self):
+        prefix = "SPL#CM#"
         data = str(self.lineedit_cartptp_box.toPlainText())
         
         self.dataTransfer(prefix + data)
