@@ -5,11 +5,8 @@ from scipy.linalg import solve_banded
 
 
 class CSplineMotion(SplineMotion):
-    def __init__(self, points):
-        self.init(points)
-
-    def __init__(self):
-        pass
+    def __init__(self, kin):
+        super(CSplineMotion, self).__init__(kin)
 
     def plot(self, data):
         pass
@@ -44,7 +41,7 @@ class CSplineMotion(SplineMotion):
             M[i, i] = 2 * (eps[i - 1] + eps[i])
             M[i, i + 1] = eps[i]
 
-        C = inv(M) * Y
+        C = np.linalg.inv(M) * Y
 
         b = np.empty(dim - 1)
         d = np.empty(dim - 1)
@@ -88,5 +85,7 @@ class CSplineMotion(SplineMotion):
         t = np.arange(0, 1, 0.01)
         for i in t:
             data = np.vstack((data, self.getValue(i)))
+            
+        data = data[1:]
 
         return (data, self.sample_trajectory(data, tool))

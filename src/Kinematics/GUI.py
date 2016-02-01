@@ -165,10 +165,10 @@ class GUI(QtGui.QWidget):
         QtCore.QObject.connect(self.button_bspline, QtCore.SIGNAL("clicked()"), self.buttonBSplineClicked)
         
         self.button_cspline = QtGui.QPushButton('Move C-Spline', self)
-        QtCore.QObject.connect(self.button_bspline, QtCore.SIGNAL("clicked()"), self.buttonCSplineClicked)
+        QtCore.QObject.connect(self.button_cspline, QtCore.SIGNAL("clicked()"), self.buttonCSplineClicked)
         
         self.button_cmspline = QtGui.QPushButton('Move CM-Spline', self)
-        QtCore.QObject.connect(self.button_bspline, QtCore.SIGNAL("clicked()"), self.buttonCMSplineClicked)
+        QtCore.QObject.connect(self.button_cmspline, QtCore.SIGNAL("clicked()"), self.buttonCMSplineClicked)
         
         # add the widgets to the grid layout
         grid_ptp.addWidget(label_ptp_a1, 0, 0)

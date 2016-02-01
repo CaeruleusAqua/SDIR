@@ -5,6 +5,7 @@ import kinematics_geom as kin_base
 import MotionFunctions as mf
 from LIN import LIN
 from BSplineMotion import BSplineMotion
+from CSplineMotion import CSplineMotion
 import numpy as np
 import sys
 import socket
@@ -42,6 +43,8 @@ def dataTransfer():
                 send = handleData(data) 
             except Exception, e:
                 print e
+                import traceback
+                traceback.print_exc()
             sock.sendto(send, addr)
     finally:
         sock.close()
@@ -103,8 +106,8 @@ def handleData(data):
         spline = None
         if data_arr[1] == 'B':
             spline = BSplineMotion(kin_base.Kinematics_geom())
-        else:
-            pass
+        elif data_arr[1] == 'C':
+            spline = CSplineMotion(kin_base.Kinematics_geom())
         
         dps = deserializePoints(data_arr[2])
         
