@@ -9,7 +9,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 
-time_ = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+time_ = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
 
 points_x = np.array([1.0,-1.5,9.0,8.0,1.1])
 points_y = np.array([2.0, 4.5,2.0,5.0,1.3])
@@ -71,7 +71,6 @@ for i in range(0,len(a)-1):
     t = np.arange(time_[i], time_[i+1], 0.01)
     data_x=np.hstack((data_x, poly(t, a, b, c, d, i)))
 
-t = np.arange(time_[0], time_[len(a)-1]+0.01, 0.01)
 
 
 a,b,c,d = getCoeff(points_y,time_)
@@ -81,7 +80,6 @@ for i in range(0,len(a)-1):
     t = np.arange(time_[i], time_[i+1], 0.01)
     data_y=np.hstack((data_y, poly(t, a, b, c, d, i)))
 
-t = np.arange(time_[0], time_[len(a)-1]+0.01, 0.01)
 
 
 a,b,c,d = getCoeff(points_z,time_)
@@ -91,7 +89,6 @@ for i in range(0,len(a)-1):
     t = np.arange(time_[i], time_[i+1], 0.01)
     data_z=np.hstack((data_z, poly(t, a, b, c, d, i)))
 
-t = np.arange(time_[0], time_[len(a)-1]+0.01, 0.01)
 
 
 #line, = plt.plot(t,data)
