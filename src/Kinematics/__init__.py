@@ -104,10 +104,13 @@ def handleData(data):
         data_arr[0] = 'GET'
     elif data_arr[0] == 'SPL':
         spline = None
+        color = None
         if data_arr[1] == 'B':
             spline = BSplineMotion(kin_base.Kinematics_geom())
+            color = [0, 1, 0]
         elif data_arr[1] == 'C':
             spline = CSplineMotion(kin_base.Kinematics_geom())
+            color = [1, 0, 0]
         
         dps = deserializePoints(data_arr[2])
         
@@ -117,12 +120,11 @@ def handleData(data):
         print ">Path"
         print path
         print "<"
-        print np.tile([0,1,0], path.shape[0])
         
         if trajectory is not None:
             handles.append(env.drawlinestrip(points=path,
                            linewidth=2.0,
-                           colors=[0,1,0]))
+                           colors=color))
                     
             mf.Move(robot, trajectory)
         

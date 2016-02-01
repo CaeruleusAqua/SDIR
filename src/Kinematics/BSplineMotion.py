@@ -92,7 +92,7 @@ class BSplineMotion(SplineMotion):
         
         fcps = self._forward_control_points(dps)
         bcps = self._backward_control_points(dps, fcps)
-        path = self._bezier_path(dps, fcps, bcps, 200)
+        path = self._bezier_path(dps, fcps, bcps, 20)
         
         path += np.tile(base, (path.shape[0], 1))
                 
