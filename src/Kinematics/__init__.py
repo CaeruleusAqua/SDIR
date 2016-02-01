@@ -4,11 +4,27 @@ import Kinematics as kin
 import kinematics_geom as kin_base
 import MotionFunctions as mf
 from LIN import LIN
+from BSplineMotion import BSplineMotion
 import numpy as np
 import sys
 import socket
 import math
 
+def rotation_matrix(axis, theta):
+    """
+    Return the rotation matrix associated with counterclockwise rotation about
+    the given axis by theta radians.
+    """
+    axis = np.asarray(axis)
+    theta = np.asarray(theta)
+    axis = axis/math.sqrt(np.dot(axis, axis))
+    a = math.cos(theta/2.0)
+    b, c, d = -axis*math.sin(theta/2.0)
+    aa, bb, cc, dd = a*a, b*b, c*c, d*d
+    bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
+    return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
+                     [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
+                     [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
 
 def dataTransfer():
     UDP_IP = "localhost"
@@ -21,7 +37,11 @@ def dataTransfer():
         sock.bind((UDP_IP, UDP_PORT))
         while True:
             data, addr = sock.recvfrom(2048)
-            send = handleData(data) 
+            send=''
+            try:
+                send = handleData(data) 
+            except Exception, e:
+                print e
             sock.sendto(send, addr)
     finally:
         sock.close()
@@ -32,12 +52,19 @@ def serializeDOF(arr):
 def deserializeDOF(s):
     return np.array(map(lambda x: math.radians(float(x)), s.split(';')))
 
+def deserializePoints(s):
+    raw_points = s.split('\n')
+    
+    return np.array(map(lambda a: map(lambda x: float(x), a.split(';')), raw_points))
+
 handles = []
+axis = None
 
 # handles the data received from the GUI and sets up data for sending
 def handleData(data):
     # split data string
     data_arr = data.split("#")
+    print data_arr
     
     # check if the robot should be moved 
     if data_arr[0] == 'MOV':
@@ -68,11 +95,35 @@ def handleData(data):
                            colors=np.array([[0,1,0],[0,1,0]])))
                     
             mf.Move(robot, trajectory)
+            
         
         # Simulate GET-request to deduplicate code
         data_arr[0] = 'GET'
+    elif data_arr[0] == 'SPL':
+        spline = None
+        if data_arr[1] == 'B':
+            spline = BSplineMotion(kin_base.Kinematics_geom())
+        else:
+            pass
         
+        dps = deserializePoints(data_arr[2])
         
+        print dps
+        (path, trajectory) = spline.move(dps, 0.01, np.array([0, 0, 0]))
+
+        print ">Path"
+        print path
+        print "<"
+        print np.tile([0,1,0], path.shape[0])
+        
+        if trajectory is not None:
+            handles.append(env.drawlinestrip(points=path,
+                           linewidth=2.0,
+                           colors=[0,1,0]))
+                    
+            mf.Move(robot, trajectory)
+        
+        data_arr[0] = 'GET'
     
     # check if GUI requests the current robot axis values as well as current orientation and position 
     if data_arr[0] == 'GET':
@@ -87,6 +138,26 @@ def handleData(data):
         #d= np.round(d,3)
 
         cart_values = str(np.round(kin[0],3)) + ";" + str(np.round(kin[1],3)) + ";" +  str(np.round(kin[2],3)) + ";" +  str(np.round(d[1],3)) + ";" +  str(np.round(d[2],3)) + ";" +  str(np.round(d[3],3))
+        
+        
+        point = kin_base.Kinematics_geom().direct_kin_to_wrist(robot.GetDOFValues())
+        d = kin_base.Kinematics_geom().direct_kin(robot.GetDOFValues())
+
+        temp = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+        
+        temp = np.dot(rotation_matrix(np.array([0, 0, 1]), d[1]), temp)
+        temp = np.dot(rotation_matrix(np.array([0, 1, 0]), d[2]), temp)
+        temp = np.dot(rotation_matrix(np.array([1, 0, 0]), d[3]), temp)
+        
+        axis_m = np.array([
+                         [temp[0][0], temp[0][1], temp[0][2], point[0]],
+                         [temp[1][0], temp[1][1], temp[1][2], point[1]],
+                         [temp[2][0], temp[2][1], temp[2][2], point[2]],
+                         [0, 0, 0, 1]
+                         ])
+        
+        print axis_m
+        handles.append(misc.DrawAxes(env, axis_m, 0.2, 2))
         
         return prefix+axis_values+cart_values
     

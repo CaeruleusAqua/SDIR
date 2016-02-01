@@ -1,9 +1,10 @@
 import numpy as np
 from MotionProfile import MotionProfileAsync
+from Motion import Motion
 
-class LIN(object):
+class LIN(Motion):
     def __init__(self, kin):
-        self.kin = kin
+        super(LIN, self).__init__(kin)
     
     def calculate(self, start_cfg, target_cfg):
         print "Start: ", start_cfg
@@ -33,56 +34,5 @@ class LIN(object):
         if trajectory.shape[0] != 0:
             trajectory[trajectory.shape[0] - 1] = target_cfg[:3]
         
-        # Now solve the inverse kinematic for every subpoint
-        angles = np.empty([trajectory.shape[0], 6])
-
-        for i, t in enumerate(trajectory):
-            sols = self.kin.inverse_kin(t,np.radians(target_cfg[3:]))
-            sol = None
-            min = 1000000.0
-            
-            for s in sols:
-                if self.kin.isSolutionValid(s, t):
-                    if i > 0:
-                        a = np.subtract(angles[i - 1], s)
-                        d = np.sqrt(a.dot(a))
-                        
-                        if d < min:
-                            min = d
-                            sol = s
-                    else:
-                        sol = s
-                        break
-                
-            if sol is None:
-                print "No solution found!"
-                
-                return None
-            
-            
-            #a = sol
-            
-            #if (i>0):
-            #    a = np.subtract(angles[i - 1], sol)
-            
-            #max_vel = np.array([1.74532925, 1.3962634, 1.3962634, 4.01425728, 2.87979327, 4.34586984]) 
-                        
-            
-            #if (np.divide(max_vel,np.tile(100.0, max_vel.shape[0])) < np.abs(a))[0:3].any():
-            #    print a
-            #    
-            #    print np.divide(max_vel,np.tile(100.0, max_vel.shape[0]))
-            #    
-            #    print np.divide(max_vel,np.tile(100.0, max_vel.shape[0])) < np.abs(a)
-            #    
-            #    print "No solution found!"
-            #    
-            #    return None
-            
-            
-            print sol
-            
-            angles[i] = sol
-
-        return angles
+        return self.sample_trajectory(trajectory, target_cfg[3:])
             

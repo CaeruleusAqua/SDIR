@@ -161,6 +161,10 @@ class GUI(QtGui.QWidget):
         # trigger function on clicked
         QtCore.QObject.connect(self.button_move, QtCore.SIGNAL("clicked()"), self.buttonMoveClicked)
         
+        self.button_bspline = QtGui.QPushButton('Move BSpline', self)
+        # trigger function on clicked
+        QtCore.QObject.connect(self.button_bspline, QtCore.SIGNAL("clicked()"), self.buttonBSplineClicked)
+        
         # add the widgets to the grid layout
         grid_ptp.addWidget(label_ptp_a1, 0, 0)
         grid_ptp.addWidget(self.lineedit_ptp_a1, 0, 1)
@@ -177,6 +181,7 @@ class GUI(QtGui.QWidget):
         grid_ptp.addWidget(label_ptp_a6, 5, 0)
         grid_ptp.addWidget(self.lineedit_ptp_a6, 5, 1)
         grid_ptp.addWidget(self.button_move, 5, 2)
+        grid_ptp.addWidget(self.button_bspline, 5, 3)
         
         # set the grid layout for the group
         group_box.setLayout(grid_ptp)
@@ -263,6 +268,12 @@ class GUI(QtGui.QWidget):
         # send data
         self.dataTransfer(prefix+msg+motion_type)
     
+    def buttonBSplineClicked(self):
+        prefix = "SPL#B#"
+        data = str(self.lineedit_cartptp_box.toPlainText())
+        
+        self.dataTransfer(prefix + data)
+    
     # function is callend when Linear Movement button is clicked    
     def buttonLinearClicked(self):
         prefix = "LIN#"
@@ -292,6 +303,7 @@ class GUI(QtGui.QWidget):
 #           
 #         s.close()
         
+        print msg
         UDP_IP = "localhost"
         UDP_PORT = 54321
           
