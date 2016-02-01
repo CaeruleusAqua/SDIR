@@ -72,9 +72,10 @@ class CSplineMotion(SplineMotion):
         time *= self.time[-1]
         slot = 0
         for i in range(len(self.time)):
-            if self.time[i] > time:
+            if self.time[i] >= time:
                 slot = i - 1
                 break
+        slot=max(slot,0)
         return np.array([self.poly_sample(time, self.coeff_x[0], self.coeff_x[1], self.coeff_x[2], self.coeff_x[3], slot),
                          self.poly_sample(time, self.coeff_y[0], self.coeff_y[1], self.coeff_y[2], self.coeff_y[3], slot),
                          self.poly_sample(time, self.coeff_z[0], self.coeff_z[1], self.coeff_z[2], self.coeff_z[3], slot)])
@@ -82,7 +83,7 @@ class CSplineMotion(SplineMotion):
     def move(self, dps, dt, tool):
         self.init(dps)
         data = np.array([0, 0, 0])
-        t = np.arange(0, 1, 0.01)
+        t = np.arange(0, 1.01, 0.01)
         for i in t:
             data = np.vstack((data, self.getValue(i)))
             
