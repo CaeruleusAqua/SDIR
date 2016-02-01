@@ -6,6 +6,7 @@ import MotionFunctions as mf
 from LIN import LIN
 from BSplineMotion import BSplineMotion
 from CSplineMotion import CSplineMotion
+from CMSplineMotion import CMSplineMotion
 import numpy as np
 import sys
 import socket
@@ -110,6 +111,9 @@ def handleData(data):
             color = [0, 1, 0]
         elif data_arr[1] == 'C':
             spline = CSplineMotion(kin_base.Kinematics_geom())
+            color = [1, 0, 0]
+        elif data_arr[1] == 'CM':
+            spline = CMSplineMotion(kin_base.Kinematics_geom())
             color = [1, 0, 0]
         
         dps = deserializePoints(data_arr[2])
