@@ -8,7 +8,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 time_ = np.arange(0, 1, 0.01)
 
-points_x = np.array([1.0,-1.5,9.0,8.0])
+points_x = np.array([1.0,-1.5,9.0,8.0,2,4,7])
 
 
 def getGain(p1,p3):
@@ -32,9 +32,9 @@ def calcGains(points):
     gain=list()
     for i in range(0,len(points)):
         if i==0:
-            gain.append(points[0]*2.0)
+            gain.append(points[0]*1.0)
         elif i==len(points)-1:
-            gain.append(points[i]*2)
+            gain.append(points[i]*1.0)
         else:
             gain.append(getGain(points[i-1],points[i+1]))
     return gain
@@ -43,8 +43,6 @@ def calcGains(points):
 def calcValue(points):
     d=list()
     gains = calcGains(points)
-    print(gains)
-    print()
     for i in range(0,len(points)-1):
         C = np.transpose(np.matrix([points[i],points[i+1],gains[i],gains[i+1]]))
         for t in time_:
@@ -58,10 +56,9 @@ def calcValue(points):
 
 data = calcValue(points_x)
 
-print(len(np.arange(0, 3, 0.01)))
 
 
-plt.plot(np.arange(0, 3, 0.01),data)
-plt.plot(np.arange(0, 4, 1),points_x,'ro')
+plt.plot(np.arange(0,len(points_x)-1, 0.01),data)
+plt.plot(np.arange(0, len(points_x), 1),points_x,'ro')
 plt.ylabel('some numbers')
 plt.show()
