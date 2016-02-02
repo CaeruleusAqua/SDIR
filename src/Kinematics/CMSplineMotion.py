@@ -58,7 +58,7 @@ class CMSplineMotion(SplineMotion):
     def move(self, dps, dt, tool):
         self.init(dps)
         data = np.array([0, 0, 0])
-        t = np.arange(0, 1.01, 0.01)
+        t = np.arange(0, 1, 0.01)
         for i in t:
             data = np.vstack((data, self.getValue(i)))
 
