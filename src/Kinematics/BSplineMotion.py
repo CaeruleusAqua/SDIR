@@ -88,7 +88,7 @@ class BSplineMotion(SplineMotion):
     def move(self, dps, dt, tool):
         base = np.mean(dps, axis=0)
         
-        dps -= np.tile(base, (dps.shape[0], 1))
+        dps = np.copy(dps) - np.tile(base, (dps.shape[0], 1))
         
         fcps = self._forward_control_points(dps)
         bcps = self._backward_control_points(dps, fcps)

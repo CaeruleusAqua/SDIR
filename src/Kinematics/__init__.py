@@ -114,7 +114,7 @@ def handleData(data):
             color = [1, 0, 0]
         elif data_arr[1] == 'CM':
             spline = CMSplineMotion(kin_base.Kinematics_geom())
-            color = [1, 0, 0]
+            color = [0, 0, 1]
         
         dps = deserializePoints(data_arr[2])
         
@@ -129,6 +129,10 @@ def handleData(data):
             handles.append(env.drawlinestrip(points=path,
                            linewidth=2.0,
                            colors=color))
+            handles.append(env.plot3(points=dps,
+                                   pointsize=0.05,
+                                   colors=color,
+                                   drawstyle=1))
                     
             mf.Move(robot, trajectory)
         
@@ -164,9 +168,6 @@ def handleData(data):
                          [temp[2][0], temp[2][1], temp[2][2], point[2]],
                          [0, 0, 0, 1]
                          ])
-        
-        print axis_m
-        handles.append(misc.DrawAxes(env, axis_m, 0.2, 2))
         
         return prefix+axis_values+cart_values
     
