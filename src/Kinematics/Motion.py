@@ -10,7 +10,7 @@ class Motion(object):
 		target_distance = vel * dt
 		
 		i = 1
-		while i < path.shape[0] - 1:
+		while i < path.shape[0]:
 			curr = result[-1]
 			n = path[i]
 			
@@ -25,7 +25,9 @@ class Motion(object):
 			else:
 				result.append(next)
 				i += 1
-			
+		
+		#result.append(path[-1])
+		
 		return np.array(result)
 	
 	def sample_trajectory(self, trajectory, tool):
